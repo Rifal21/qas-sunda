@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pananyaan Abah</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='pananyaan abah.jpg') }}"
+      class="rounded-circle"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+    />
+    <script>
+      // Fungsi untuk mengatur mode fullscreen
+      function toggleFullScreen() {
+        var doc = window.document;
+        var docEl = doc.documentElement;
+
+        var requestFullScreen =
+          docEl.requestFullscreen ||
+          docEl.mozRequestFullScreen ||
+          docEl.webkitRequestFullScreen ||
+          docEl.msRequestFullscreen;
+
+        if (
+          !doc.fullscreenElement &&
+          !doc.mozFullScreenElement &&
+          !doc.webkitFullscreenElement &&
+          !doc.msFullscreenElement
+        ) {
+          requestFullScreen.call(docEl);
+        }
+      }
+
+      // Fungsi yang dijalankan saat halaman dimuat
+      window.onload = function () {
+        toggleFullScreen();
+      };
+
+      // Fungsi yang dijalankan sebelum halaman direfresh
+      window.onbeforeunload = function () {
+        // Pastikan untuk mengembalikan nilai null untuk mencegah munculnya pesan konfirmasi pada beberapa browser
+        return null;
+      };
+    </script>
+  </head>
+  <body style="background-color: #444654">
+    <div id="container-fluid" class="container">
+      <nav class="navbar" style="background-color: #343541">
+        <div class="container-fluid">
+          <a
+            type="button"
+            class="text-center mx-auto text-decoration-none text-light"
+            data-bs-toggle="modal"
+            data-bs-target="#exampleModal"
+          >
+            Patarosan nu tos kawaler
+          </a>
+        </div>
+      </nav>
+      <div class="row justify-content-center">
+        <div class="text-center">
+          <!-- Ganti path gambar sesuai dengan struktur proyek Anda -->
+          <img
+            src="{{ url_for('static', filename='pananyaan abah.jpg') }}"
+            alt="Logo"
+            class="rounded-circle mt-3"
+            width="200"
+          />
+        </div>
+        <h1
+          class="text-center mt-3 border-bottom border-light text-light text-uppercase"
+        >
+          ᮕᮔᮑᮃᮔ᮪ ᮃᮘᮠ᮪ <br />
+          (Pananyaan Abah)
+        </h1>
+        <h3 class="aturan text-light">Aturan Maen :</h3>
+        <p class="text-light eusi">
+          1. Patarosan mung sabundeureun bahasan ngenaan Pakakas , parabot
+          ,kasenian , adat/tradisi jeung kadaharan <br />2. Patarosan mung
+          naroskeun <strong>'leres atanapi henteu'</strong> <br />3. Conto
+          Patarosan
+          <strong
+            >'leres atanapi henteu pakakas paranti ngadek namina bedog'</strong
+          >
+          atawa
+          <strong
+            >'leres atanapi henteu balicong pakakas paranti ngala lauk'</strong
+          >
+          <strong>'Kujang pakakas khas orang sunda'</strong>
+        </p>
+      </div>
+
+      <div class="row justify-content-center mb-5">
+        <div class="col mb-5">
+          {% if question %}
+          <div id="load">
+            <div class="spinner-grow spinner-grow-sm text-light" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="text-start text-light" role="status">
+              Antosan sakedap...
+            </p>
+          </div>
+          <div class="border border-light rounded p-2">
+            <h2 class="intro text-light"></h2>
+            <p class="jawaban text-light" id="jawaban"></p>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+      <div class="row justify-content-center" id="masuk">
+        <div class="col-lg-10 mx-auto fixed-bottom">
+          <form action="/predict" method="post" name="Prediksi" id="prediksi">
+            <div class="input-group mb-3">
+              <input
+                type="search"
+                class="form-control"
+                name="question"
+                id="question"
+                required
+                placeholder="Lebetkeun patarosanna jang/neng...."
+                aria-label="Lebetkeun patarosanna jang/neng...."
+                aria-describedby="button-addon2"
+                autofocus
+              />
+              <button
+                class="btn btn-outline-secondary"
+                type="submit"
+                id="button-addon2"
+                value="Prediksi"
+              >
+                <i class="bi bi-send"></i>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Modal -->
+      <div
+        class="modal fade"
+        id="exampleModal"
+        tabindex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">
+                Patarosan nu tos kawaler
+              </h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div
+              class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
+            >
+              <table class="table">
+                <tr>
+                  <th>Patarosan</th>
+                  <th>Waleran</th>
+                  <th>Jelasna</th>
+                </tr>
+                {% for item in answered_questions %}
+                <tr>
+                  <td>{{ item.question }}</td>
+                  <td>{{ item.answer }}</td>
+                  <td>{{ item.context }}</td>
+                </tr>
+                {% endfor %}
+              </table>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.3/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/TextPlugin.min.js"></script>
+
+    <script>
+      gsap.registerPlugin(TextPlugin);
+      gsap.to(".jawaban", {
+        duration: 5,
+        delay: 3,
+        text: "Tina patarosan ieu => {{ question }} , ku abah di waler <strong class='text-uppercase'>{{ answer }}</strong> , waleran langkung jelasna => <strong>{{ context }}</strong>",
+      });
+      gsap.to(".intro", {
+        duration: 2,
+        delay: 1,
+        text: "Waleran ti abah",
+      });
+
+      // Menunggu 10 detik (10000 milidetik) sebelum menghilangkan elemen
+      setTimeout(() => {
+        const loadElement = document.getElementById("load");
+
+        loadElement.style.display = "none";
+      }, 8000);
+    </script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
